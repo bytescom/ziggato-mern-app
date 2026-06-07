@@ -59,8 +59,12 @@ function CreateAndEditShop() {
       toast.success(data.message);
       navigate("/");
     } catch (error) {
-      console.log(error.response.data);
-      toast.error(error.response?.data?.message);
+      console.log(error);
+      toast.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to save shop details."
+      );
     } finally {
       setLoading(false); // ✅ stop loader always
     }
@@ -103,7 +107,7 @@ function CreateAndEditShop() {
           <p className="mt-1.5 text-sm text-stone-400">
             {shopData
               ? "Update your restaurant information below."
-              : "Fill in the details to get listed on OrderKaro."}
+              : "Fill in the details to get listed on Ziggato."}
           </p>
         </div>
 

@@ -1,5 +1,5 @@
 import app from "./app.js";
-import { connectDB } from "./src/config/database.config.js";
+import { connectDB } from "./src/config/db.config.js";
 import { PORT } from "./src/config/index.js";
 
 connectDB()

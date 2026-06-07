@@ -13,38 +13,58 @@ function useGetCity() {
   const { userData } = useSelector((state) => state.user);
   const apiKey = import.meta.env.VITE_GEOAPIFY_API_KEY;
   console.log("apiKey: ", apiKey);
+
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(async (position) => {
-      //   console.log(position);
-      const latitude = position.coords.latitude;
-      const longitude = position.coords.longitude;
+    if (!navigator.geolocation) {
+      dispatch(setCity("Noida"));
+      return;
+    }
 
-      dispatch(setLocation({ lat: latitude, lon: longitude }));
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
 
-      const result = await axios.get(
-        `https://api.geoapify.com/v1/geocode/reverse?lat=${latitude}&lon=${longitude}&format=json&apiKey=${apiKey}`,
-      );
-      //   console.log(result.data);
+        dispatch(setLocation({ lat: latitude, lon: longitude }));
 
-      dispatch(
-        setCity(
-          result?.data?.results[0].city || result?.data?.results[0].county,
-        ),
-      );
+        try {
+          const result = await axios.get(
+            `https://api.geoapify.com/v1/geocode/reverse?lat=${latitude}&lon=${longitude}&format=json&apiKey=${apiKey}`
+          );
 
-      dispatch(setState(result?.data?.results[0].state));
+          dispatch(
+            setCity(
+              result?.data?.results[0]?.city ||
+                result?.data?.results[0]?.county ||
+                "Noida"
+            )
+          );
 
-      dispatch(
-        setCurrentAddress(
-          result?.data?.results[0].address_line2 ||
-            result?.data?.results[0].address_line1,
-        ),
-      );
+          dispatch(setState(result?.data?.results[0]?.state || "Uttar Pradesh"));
 
-      console.log(result?.data?.results[0].address_line2);
+          dispatch(
+            setCurrentAddress(
+              result?.data?.results[0]?.address_line2 ||
+                result?.data?.results[0]?.address_line1 ||
+                "Sector 18, Noida"
+            )
+          );
 
-      dispatch(setAddress(result?.data?.results[0].address_line2));
-    });
+          dispatch(
+            setAddress(
+              result?.data?.results[0]?.address_line2 || "Sector 18, Noida"
+            )
+          );
+        } catch (err) {
+          console.error("Reverse geocoding failed, using Noida:", err);
+          dispatch(setCity("Noida"));
+        }
+      },
+      (error) => {
+        console.error("Geolocation failed, using Noida:", error);
+        dispatch(setCity("Noida"));
+      }
+    );
   }, [apiKey, dispatch, userData]);
 }
 

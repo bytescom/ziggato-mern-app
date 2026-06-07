@@ -39,8 +39,8 @@ export const login = async (req, res, next) => {
     const user = await UserModel.findOne({ email });
     if (!user) return next(new ErrorResponse("Invalid Credentials", 401));
 
-    // const isMatch = await user.comparePassword(password);
-    // if (!isMatch) return next(new ErrorResponse("Invalid Credentials", 401));
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) return next(new ErrorResponse("Invalid Credentials", 401));
 
     const token = generateToken(user._id);
     res.cookie("token", token, {

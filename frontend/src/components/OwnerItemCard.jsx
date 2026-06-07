@@ -22,7 +22,11 @@ function OwnerItemCard({ data }) {
       dispatch(setShopData(result.data.shop));
     } catch (error) {
       console.log(error);
-      toast.error(error.response.data.message);
+      toast.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to delete item."
+      );
     } finally {
       setDeleting(false);
     }

@@ -67,8 +67,12 @@ const EditItem = () => {
       toast.success(result.data.message);
       navigate("/");
     } catch (error) {
-      console.log(error.response);
-      toast.error(error.response.data.message);
+      console.log(error);
+      toast.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to update menu item."
+      );
     } finally {
       setLoading(false);
     }

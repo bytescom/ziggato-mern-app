@@ -10,8 +10,8 @@ import {
 
 const mailTransporter = nodemailer.createTransport({
   service: NODEMAILER_SERVICE,
-  port: NODEMAILER_PORT,
-  secure: NODEMAILER_SECURE, // true for 465, false for other ports
+  port: parseInt(NODEMAILER_PORT) || 465,
+  secure: NODEMAILER_SECURE === "true" || NODEMAILER_SECURE === true,
   auth: {
     user: NODEMAILER_EMAIL,
     pass: NODEMAILER_PASSWORD,

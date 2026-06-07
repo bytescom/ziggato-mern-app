@@ -10,7 +10,7 @@ function Home() {
     <div className="min-h-screen bg-linear-to-br from-gray-50 via-yellow-50 to-amber-50">
       {userData.role == "user" && <UserDashboard />}
       {userData.role == "owner" && <OwnerDashboard />}
-      {/* {userData.role == "deliveryBoy" && <DeliveryBoy />} */}
+      {userData.role == "deliveryBoy" && <DeliveryBoy />}
     </div>
   );
 }

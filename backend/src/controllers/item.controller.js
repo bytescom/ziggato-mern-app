@@ -182,19 +182,23 @@ export const getItemsByCity = async (req, res, next) => {
   try {
     const { city } = req.params;
     const cityPattern = new RegExp(`^${city}$`, "i");
-    const shops = await ShopModel.find({ city: cityPattern }).populate({
+    let shops = await ShopModel.find({ city: cityPattern }).populate({
       path: "items",
     });
 
     if (shops.length === 0) {
-      return next(new ErrorResponse(`No shops found in city ${city}`, 404));
+      // Fallback: If no shops are found in this city, find all shops to fetch items from!
+      shops = await ShopModel.find({}).populate({
+        path: "items",
+      });
     }
 
     const shopIds = shops.map((shop) => shop._id);
-    const items = await ItemModel.find({ shop: { $in: shopIds } });
+    let items = await ItemModel.find({ shop: { $in: shopIds } });
 
     if (items.length === 0) {
-      return next(new ErrorResponse(`No items found in city ${city}`, 404));
+      // Fallback: If no items found, return all items in the database
+      items = await ItemModel.find({});
     }
 
     res.status(200).json({

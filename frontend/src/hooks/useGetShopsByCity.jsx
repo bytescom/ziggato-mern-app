@@ -9,11 +9,10 @@ function useGetShopByCity() {
   const { city } = useSelector((state) => state.user);
 
   useEffect(() => {
-    if (!city) return; // ← wait until city is available
     const fetchShops = async () => {
       try {
         const result = await axiosInstance.get(
-          SHOP_ROUTES.GET_SHOP_BY_CITY(city),
+          SHOP_ROUTES.GET_SHOP_BY_CITY(city || "Noida"),
         );
         dispatch(setShopsInMyCity(result.data.shops));
       } catch (error) {

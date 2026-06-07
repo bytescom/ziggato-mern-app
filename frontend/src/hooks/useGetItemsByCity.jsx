@@ -8,11 +8,10 @@ function useGetItemsByCity() {
   const dispatch = useDispatch();
   const { city } = useSelector((state) => state.user);
   useEffect(() => {
-    if (!city) return;
     const fetchItems = async () => {
       try {
         const result = await axiosInstance.get(
-          ITEM_ROUTES.GET_ITEMS_BY_CITY(city),
+          ITEM_ROUTES.GET_ITEMS_BY_CITY(city || "Noida"),
         );
         // console.log("result: ", result);
         dispatch(setItemsInMyCity(result.data.items));

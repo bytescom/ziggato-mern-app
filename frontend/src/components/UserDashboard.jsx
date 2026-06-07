@@ -162,7 +162,7 @@ function UserDashboard() {
           <div className="absolute -bottom-10 -right-4 w-28 h-28 bg-orange-600 rounded-full opacity-30" />
           <div className="relative z-10">
             <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-orange-100 mb-2">
-              {city}
+              {city || "Detecting Location..."}
             </p>
             <h1 className="text-2xl sm:text-3xl font-bold text-white leading-snug mb-1">
               Hungry? We've got you 🍔
@@ -188,7 +188,7 @@ function UserDashboard() {
 
         {/* ── Best Shops ── */}
         <ScrollRow
-          label={["Near You", `Best shops in ${city}`]}
+          label={["Near You", city ? `Best shops in ${city}` : "Best shops near you"]}
           badge={`${shopsInMyCity?.length ?? 0} shops`}
         >
           {shopsInMyCity?.map((shop, index) => (

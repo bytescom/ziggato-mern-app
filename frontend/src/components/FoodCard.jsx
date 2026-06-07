@@ -9,6 +9,7 @@ import {
 } from "react-icons/fa";
 import { FaRegStar } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from "sonner";
 import { addToCart } from "../redux/slices/userSlice";
 // import { addToCart } from "../redux/userSlice";
 
@@ -38,19 +39,22 @@ function FoodCard({ data }) {
   const isInCart = cartItems?.some((i) => i.id === data._id);
 
   const handleAddToCart = () => {
-    if (quantity > 0) {
-      dispatch(
-        addToCart({
-          id: data._id,
-          name: data.name,
-          price: data.price,
-          image: data.image,
-          shop: data.shop,
-          quantity,
-          foodType: data.foodType,
-        }),
-      );
+    const finalQuantity = quantity > 0 ? quantity : 1;
+    if (quantity === 0) {
+      setQuantity(1);
     }
+    dispatch(
+      addToCart({
+        id: data._id,
+        name: data.name,
+        price: data.price,
+        image: data.image,
+        shop: data.shop,
+        quantity: finalQuantity,
+        foodType: data.foodType,
+      }),
+    );
+    toast.success(`${data.name} added to cart!`);
   };
 
   return (

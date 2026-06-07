@@ -132,7 +132,7 @@ function Checkout() {
         navigate("/order-placed");
         console.log(result);
       } else {
-        // openRazorpayWindow(result.data.orderId, result.data.razorOrder);
+        openRazorpayWindow(result.data.orderId, result.data.razorOrder);
       }
     } catch (error) {
       console.log(error.response);
@@ -141,31 +141,31 @@ function Checkout() {
     }
   };
 
-  // const openRazorpayWindow = (orderId, razorOrder) => {
-  //   const options = {
-  //     key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-  //     amount: razorOrder.amount,
-  //     currency: "INR",
-  //     name: "OrderKaro",
-  //     description: "Food Delivery",
-  //     order_id: razorOrder.id,
-  //     handler: async function (response) {
-  //       try {
-  //         const result = await axios.post(
-  //           `${serverUrl}/api/order/verify-payment`,
-  //           { razorpay_payment_id: response.razorpay_payment_id, orderId },
-  //           { withCredentials: true },
-  //         );
-  //         // dispatch(addMyOrder(result.data));
-  //         navigate("/order-placed");
-  //       } catch (error) {
-  //         console.log(error);
-  //       }
-  //     },
-  //   };
-  //   const rzp = new window.Razorpay(options);
-  //   rzp.open();
-  // };
+  const openRazorpayWindow = (orderId, razorOrder) => {
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount: razorOrder.amount,
+      currency: "INR",
+      name: "Ziggato",
+      description: "Food Delivery",
+      order_id: razorOrder.id,
+      handler: async function (response) {
+        try {
+          const result = await axios.post(
+            `${serverUrl}/api/order/verify-payment`,
+            { razorpay_payment_id: response.razorpay_payment_id, orderId },
+            { withCredentials: true },
+          );
+          // dispatch(addMyOrder(result.data));
+          navigate("/order-placed");
+        } catch (error) {
+          console.log(error);
+        }
+      },
+    };
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  };
 
   return (
     <div className="min-h-screen w-full bg-stone-50">

@@ -30,7 +30,11 @@ function Navbar() {
       toast.success(response.data.message);
     } catch (error) {
       //   console.log(error);
-      toast.error(error?.response?.data?.message);
+      toast.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to log out. Please check your connection."
+      );
     }
   };
 
@@ -41,7 +45,7 @@ function Navbar() {
         <div className="w-full h-full max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-4">
           {/* Brand */}
           <h1 className="text-2xl font-bold tracking-tight text-stone-900 shrink-0">
-            Order<span className="text-orange-500">Karo</span>
+            Zigg<span className="text-orange-500">ato</span>
           </h1>
 
           {/* Search bar — desktop only, user only */}

@@ -34,8 +34,12 @@ function SignUp() {
       navigate("/login");
     } catch (error) {
       setLoading(false);
-      toast.error(error.response.data.message);
-      console.log(error.response.data.message);
+      toast.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to connect to server. Please ensure the backend is running."
+      );
+      console.log(error?.response?.data?.message);
     }
   };
 
@@ -61,7 +65,7 @@ function SignUp() {
         {/* Top logo */}
         <div className="relative z-10">
           <span className="text-white text-2xl font-bold tracking-tight">
-            Order<span className="text-orange-100">Karo</span>
+            Zigg<span className="text-orange-100">ato</span>
           </span>
         </div>
 
@@ -109,7 +113,7 @@ function SignUp() {
           {/* Mobile brand header */}
           <div className="lg:hidden mb-8 text-center">
             <h1 className="text-3xl font-bold tracking-tight text-stone-900">
-              Order<span className="text-orange-500">Karo</span>
+              Zigg<span className="text-orange-500">ato</span>
             </h1>
             <p className="mt-1 text-sm text-stone-600">
               Hunger? We've got you covered.

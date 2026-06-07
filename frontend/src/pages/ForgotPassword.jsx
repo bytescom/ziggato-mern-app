@@ -168,7 +168,11 @@ function ForgotPassword() {
       setStep(3);
       toast.success("OTP verified successfully");
     } catch (error) {
-      toast.error(error?.response?.data?.message);
+      toast.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to verify OTP."
+      );
     } finally {
       setLoading(false);
     }
@@ -186,7 +190,11 @@ function ForgotPassword() {
       toast.success("Password reset successfully");
       navigate("/login");
     } catch (error) {
-      toast.error(error?.response?.data?.message);
+      toast.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to reset password."
+      );
     } finally {
       setLoading(false);
     }
@@ -254,7 +262,7 @@ function ForgotPassword() {
 
         <div className="relative z-10">
           <span className="text-white text-2xl font-bold tracking-tight">
-            Order<span className="text-orange-100">Karo</span>
+            Zigg<span className="text-orange-100">ato</span>
           </span>
         </div>
 
@@ -305,7 +313,7 @@ function ForgotPassword() {
         <div className="w-full max-w-sm">
           <div className="lg:hidden mb-8 text-center">
             <h1 className="text-3xl font-bold tracking-tight text-stone-900">
-              Order<span className="text-orange-500">Karo</span>
+              Zigg<span className="text-orange-500">ato</span>
             </h1>
             <p className="mt-1 text-sm text-stone-600">Account recovery</p>
           </div>
@@ -533,7 +541,7 @@ function ForgotPassword() {
             <p className="text-[11px] text-stone-600 leading-relaxed">
               Need help?{" "}
               <span className="text-orange-400 hover:text-orange-500 cursor-pointer transition-colors underline underline-offset-2">
-                support@orderkaro.com
+                support@ziggato.com
               </span>
             </p>
           </div>
