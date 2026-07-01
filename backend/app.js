@@ -2,11 +2,8 @@ import { clerkMiddleware } from "@clerk/express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
-
 import { FRONTEND_URL } from "./src/config/index.js";
-
 import { errorHandler } from "./src/middlewares/error.middleware.js";
-
 import authRoutes from "./src/routes/auth.route.js";
 import itemRoutes from "./src/routes/item.route.js";
 import orderRoutes from "./src/routes/order.route.js";
@@ -17,7 +14,7 @@ import webhookRouter from "./src/routes/webhook.route.js";
 const app = express();
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: FRONTEND_URL,
     credentials: true,
   }),
 );
