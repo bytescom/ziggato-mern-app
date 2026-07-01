@@ -13,8 +13,9 @@ import { useNavigate } from "react-router-dom";
 import { ORDER_ROUTES } from "../constants/endpoints";
 import axiosInstance from "../lib/axios";
 import { setAddress, setLocation } from "../redux/slices/mapSlice";
+import { clearCart } from "../redux/slices/userSlice";
 
-// ── Must be outside main component ───────────────────────────────
+// Must be outside main component
 function RecenterMap({ location }) {
   const map = useMap();
   useEffect(() => {
@@ -129,6 +130,7 @@ function Checkout() {
       });
       if (paymentMethod === "cod") {
         // dispatch(addMyOrder(result.data));
+        dispatch(clearCart());
         navigate("/order-placed");
         console.log(result);
       } else {
@@ -157,6 +159,7 @@ function Checkout() {
             { withCredentials: true },
           );
           // dispatch(addMyOrder(result.data));
+          dispatch(clearCart());
           navigate("/order-placed");
         } catch (error) {
           console.log(error);

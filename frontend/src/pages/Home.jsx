@@ -16,5 +16,3 @@ function Home() {
 }
 
 export default Home;
-
-//? 5hrs 3mins

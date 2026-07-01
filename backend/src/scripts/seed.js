@@ -6,7 +6,7 @@ import ShopModel from "../models/Shop.model.js";
 import UserModel from "../models/User.model.js";
 
 const MONGO_URI =
-  process.env.MONGO_URI || "mongodb://localhost:27017/food-delivery-app";
+  process.env.MONGO_URI;
 
 // ── IDs ───────────────────────────────────────────────────────────
 const IDS = {

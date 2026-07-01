@@ -1,23 +1,19 @@
 import { useState } from "react";
-import {
-  FaDrumstickBite,
-  FaLeaf,
-  FaMinus,
-  FaPlus,
-  FaShoppingCart,
-  FaStar,
+import { FaDrumstickBite, FaLeaf, FaMinus, FaPlus, FaShoppingCart, FaStar,
 } from "react-icons/fa";
 import { FaRegStar } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
-import { addToCart } from "../redux/slices/userSlice";
-// import { addToCart } from "../redux/userSlice";
+import { addToCart, removeFromCart, updateQuantity,
+} from "../redux/slices/userSlice";
 
 function FoodCard({ data }) {
   const [quantity, setQuantity] = useState(0);
   const dispatch = useDispatch();
   const { cartItems } = useSelector((state) => state.user);
-  // console.log("cartItems: ", cartItems);
+
+  const cartItem = cartItems?.find((i) => i.id === data._id);
+  const isInCart = !!cartItem;
 
   const renderStars = (rating) => {
     const stars = [];
@@ -33,16 +29,34 @@ function FoodCard({ data }) {
     return stars;
   };
 
-  const handleIncrease = () => setQuantity((q) => q + 1);
-  const handleDecrease = () => setQuantity((q) => (q > 0 ? q - 1 : 0));
+  const handleIncrease = () => {
+    if (isInCart) {
+      dispatch(
+        updateQuantity({ id: data._id, quantity: cartItem.quantity + 1 }),
+      );
+    } else {
+      setQuantity((q) => q + 1);
+    }
+  };
 
-  const isInCart = cartItems?.some((i) => i.id === data._id);
+  const handleDecrease = () => {
+    if (isInCart) {
+      if (cartItem.quantity <= 1) {
+        dispatch(removeFromCart(data._id));
+        toast.success(`${data.name} removed from cart`);
+      } else {
+        dispatch(
+          updateQuantity({ id: data._id, quantity: cartItem.quantity - 1 }),
+        );
+      }
+    } else {
+      setQuantity((q) => (q > 0 ? q - 1 : 0));
+    }
+  };
 
   const handleAddToCart = () => {
+    if (isInCart) return;
     const finalQuantity = quantity > 0 ? quantity : 1;
-    if (quantity === 0) {
-      setQuantity(1);
-    }
     dispatch(
       addToCart({
         id: data._id,
@@ -55,6 +69,7 @@ function FoodCard({ data }) {
       }),
     );
     toast.success(`${data.name} added to cart!`);
+    setQuantity(0);
   };
 
   return (
@@ -119,7 +134,7 @@ function FoodCard({ data }) {
               <FaMinus size={10} />
             </button>
             <span className="text-xs font-semibold text-stone-700 min-w-4 text-center">
-              {quantity}
+              {isInCart ? cartItem.quantity : quantity}
             </span>
             <button
               className="w-7 h-7 flex items-center justify-center text-stone-500 hover:text-orange-500 transition-colors cursor-pointer"

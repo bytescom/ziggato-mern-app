@@ -28,7 +28,7 @@ function SignUp() {
         mobile,
         role,
       });
-      console.log(response);
+      // console.log(response);
       toast.success(response.data.message);
       setLoading(false);
       navigate("/login");

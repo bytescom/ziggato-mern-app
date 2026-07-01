@@ -12,7 +12,7 @@ function useGetCity() {
   const dispatch = useDispatch();
   const { userData } = useSelector((state) => state.user);
   const apiKey = import.meta.env.VITE_GEOAPIFY_API_KEY;
-  console.log("apiKey: ", apiKey);
+  // console.log("apiKey: ", apiKey);
 
   useEffect(() => {
     if (!navigator.geolocation) {
