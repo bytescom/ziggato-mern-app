@@ -1,6 +1,14 @@
+import crypto from "crypto";
+import Razorpay from "razorpay";
 import OrderModel from "../models/order.model.js";
 import ShopModel from "../models/Shop.model.js";
 import ErrorResponse from "../utils/ApiError.util.js";
+import { RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET } from "../config/index.js";
+
+const razorpay = new Razorpay({
+  key_id: RAZORPAY_KEY_ID,
+  key_secret: RAZORPAY_KEY_SECRET,
+});
 
 export const placeOrder = async (req, res, next) => {
   try {
@@ -57,6 +65,18 @@ export const placeOrder = async (req, res, next) => {
       shopOrders,
     });
 
+    // If online payment, create a Razorpay order
+    if (paymentMethod === "online") {
+      const razorpayOrder = await razorpay.orders.create({
+        amount: totalAmount * 100, // Razorpay expects paise
+        currency: "INR",
+        receipt: newOrder._id.toString(),
+      });
+
+      newOrder.razorpayOrderId = razorpayOrder.id;
+      await newOrder.save();
+    }
+
     await newOrder.populate(
       "shopOrders.shopOrderItems.item",
       "name image price",
@@ -77,6 +97,43 @@ export const placeOrder = async (req, res, next) => {
 //   dominoesId: [itemId1, itemId2, item2],
 //   pizzaHutId: [itemId3],
 // };
+
+export const verifyPayment = async (req, res, next) => {
+  try {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+      req.body;
+
+    // Verify the payment signature
+    const generatedSignature = crypto
+      .createHmac("sha256", RAZORPAY_KEY_SECRET)
+      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+      .digest("hex");
+
+    if (generatedSignature !== razorpay_signature) {
+      return next(new ErrorResponse("Payment verification failed", 400));
+    }
+
+    // Update order with payment details
+    const order = await OrderModel.findOne({
+      razorpayOrderId: razorpay_order_id,
+    });
+
+    if (!order) {
+      return next(new ErrorResponse("Order not found", 404));
+    }
+
+    order.payment = true;
+    order.razorpayPaymentId = razorpay_payment_id;
+    await order.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Payment verified successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const getOrders = async (req, res, next) => {
   try {

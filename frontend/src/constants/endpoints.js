@@ -1,5 +1,5 @@
 export const BACKEND_URL =
-  import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+  import.meta.env.VITE_BACKEND_URL;
 
 export const AUTH_ROUTES = {
   REGISTER: `${BACKEND_URL}/api/v1/auth/register`,
@@ -35,4 +35,5 @@ export const ITEM_ROUTES = {
 
 export const ORDER_ROUTES = {
   PLACE_ORDER: `${BACKEND_URL}/api/v1/order/place`,
+  VERIFY_PAYMENT: `${BACKEND_URL}/api/v1/order/verify-payment`,
 };

@@ -14,6 +14,7 @@ import { ORDER_ROUTES } from "../constants/endpoints";
 import axiosInstance from "../lib/axios";
 import { setAddress, setLocation } from "../redux/slices/mapSlice";
 import { clearCart } from "../redux/slices/userSlice";
+import { toast } from "sonner";
 
 // Must be outside main component
 function RecenterMap({ location }) {
@@ -26,7 +27,7 @@ function RecenterMap({ location }) {
   return null;
 }
 
-// ── Step indicator ────────────────────────────────────────────────
+// ── Step indicator ───────────────────────────────────────────
 function Step({ number, label, active, done }) {
   return (
     <div className="flex items-center gap-2">
@@ -50,7 +51,7 @@ function Step({ number, label, active, done }) {
   );
 }
 
-// ── Main ─────────────────────────────────────────────────────────
+// ── Main ──────────────────────────────────────────────────
 function Checkout() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -128,46 +129,82 @@ function Checkout() {
         totalAmount: grandTotal,
         cartItems,
       });
+      
       if (paymentMethod === "cod") {
-        // dispatch(addMyOrder(result.data));
         dispatch(clearCart());
+        toast.success("Order placed successfully!");
         navigate("/order-placed");
-        console.log(result);
       } else {
-        openRazorpayWindow(result.data.orderId, result.data.razorOrder);
+        openRazorpayWindow(
+          result.data.newOrder._id,
+          result.data.newOrder.razorpayOrderId,
+          result.data.newOrder.totalAmount,
+        );
       }
     } catch (error) {
-      console.log(error.response);
+      toast.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to place order"
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  const openRazorpayWindow = (orderId, razorOrder) => {
+  const openRazorpayWindow = (orderId, razorpayOrderId, orderAmount) => {
+    // Sanitize mobile/contact number
+    let formattedContact = userData?.mobile ? String(userData.mobile).replace(/\D/g, "") : "";
+    if (formattedContact.length > 10) {
+      formattedContact = formattedContact.slice(-10); // get last 10 digits
+    }
+
     const options = {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-      amount: razorOrder.amount,
+      amount: orderAmount * 100, // exact amount from backend order
       currency: "INR",
       name: "Ziggato",
       description: "Food Delivery",
-      order_id: razorOrder.id,
+      order_id: razorpayOrderId,
+      redirect: false,
+      prefill: {
+        name: userData?.fullName || "",
+        email: userData?.email || "",
+        contact: formattedContact,
+      },
+      notes: {
+        orderId: orderId,
+      },
+      theme: {
+        color: "#f97316",
+      },
       handler: async function (response) {
         try {
-          const result = await axios.post(
-            `${serverUrl}/api/order/verify-payment`,
-            { razorpay_payment_id: response.razorpay_payment_id, orderId },
-            { withCredentials: true },
-          );
-          // dispatch(addMyOrder(result.data));
+          // Verify payment on backend
+          await axiosInstance.post(ORDER_ROUTES.VERIFY_PAYMENT, {
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+          });
           dispatch(clearCart());
+          toast.success("Payment successful! Order placed.");
           navigate("/order-placed");
         } catch (error) {
-          console.log(error);
+          toast.error(
+            error?.response?.data?.message || "Payment verification failed",
+          );
         }
       },
+      modal: {
+        ondismiss: function () {
+          toast.error("Payment cancelled");
+        },
+      },
     };
-    const rzp = new window.Razorpay(options);
-    rzp.open();
+
+    console.log("Opening Razorpay with options:", options);
+    var rzp1 = new window.Razorpay(options);
+    rzp1.open();
   };
 
   return (
